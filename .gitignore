@@ -1,0 +1,9 @@
+node_modules/
+data/users.json
+data/exams.json
+data/submissions.json
+*.log
+*.pid
+r.bat
+server.err
+crash.txt
