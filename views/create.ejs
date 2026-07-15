@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مولد الامتحانات</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .nav { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 25px; }
+    .nav h2 { font-size: 1.1em; color: #2c3e50; }
+    .nav a { color: #3498db; text-decoration: none; margin-right: 15px; font-size: 0.95em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .logout { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <h2>👋 مرحباً، <%= user.name %></h2>
+      <div>
+        <a href="/">إنشاء امتحان</a>
+        <a href="/dashboard">لوحة التحكم</a>
+        <a href="/settings/ads">الإعلانات</a>
+        <a href="/logout" class="logout">تسجيل الخروج</a>
+      </div>
+    </div>
+
+    <%- include('partials/ad', { position: 'top-page' }) %>
+    <%- include('partials/ad', { position: 'after-nav' }) %>
+
+    <header>
+      <h1>📝 مولد الامتحانات</h1>
+      <p>أنشئ امتحانك واحصل على رابط مباشر للمشاركة</p>
+    </header>
+
+    <%- include('partials/ad', { position: 'before-form' }) %>
+
+    <form id="examForm">
+      <div class="form-section">
+        <label for="examTitle">عنوان الامتحان</label>
+        <input type="text" id="examTitle" placeholder="مثال: امتحان الرياضيات - الفصل الأول" required>
+      </div>
+
+      <%- include('partials/ad', { position: 'in-form' }) %>
+
+      <div class="form-section">
+        <label>الأسئلة</label>
+        <div id="questionsContainer">
+          <div class="question-item" data-index="0">
+            <div class="question-header">
+              <span class="question-number">السؤال 1</span>
+              <button type="button" class="btn-remove" onclick="removeQuestion(this)" title="حذف السؤال">✕</button>
+            </div>
+            <textarea class="question-text" placeholder="اكتب نص السؤال هنا..." rows="2" required></textarea>
+            <div class="question-type">
+              <label>نوع الإجابة:</label>
+              <select onchange="toggleOptions(this)">
+                <option value="text">إجابة كتابية</option>
+                <option value="mcq">اختيار من متعدد</option>
+                <option value="truefalse">صح/خطأ</option>
+              </select>
+            </div>
+            <div class="options-container" style="display:none;">
+              <label>الخيارات:</label>
+              <div class="options-list">
+                <input type="text" class="option-input" placeholder="الخيار 1">
+                <input type="text" class="option-input" placeholder="الخيار 2">
+              </div>
+              <button type="button" class="btn-small" onclick="addOption(this)">+ إضافة خيار</button>
+            </div>
+            <div class="answer-section">
+              <label>الإجابة النموذجية (اختياري)</label>
+              <input type="text" class="answer-input" placeholder="الإجابة الصحيحة">
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addQuestion()">+ إضافة سؤال</button>
+      </div>
+
+      <button type="submit" class="btn-submit">🚀 توليد الامتحان</button>
+    </form>
+
+    <%- include('partials/ad', { position: 'after-submit' }) %>
+
+    <div id="result" class="result-box" style="display:none;">
+      <h3>✅ تم إنشاء الامتحان!</h3>
+      <p>الرابط المباشر للامتحان:</p>
+      <div class="link-box">
+        <input type="text" id="examLink" readonly>
+        <button onclick="copyLink()">📋 نسخ</button>
+      </div>
+      <p class="note">يمكنك مشاركة هذا الرابط مع أي شخص للإجابة على الامتحان</p>
+      <p class="note">الإجابات ستظهر في <a href="/dashboard" style="color:#3498db;">لوحة التحكم</a></p>
+    </div>
+
+    <%- include('partials/ad', { position: 'bottom-page' }) %>
+  </div>
+
+  <script>
+    let questionCount = 1;
+
+    function addQuestion() {
+      questionCount++;
+      const container = document.getElementById('questionsContainer');
+      const div = document.createElement('div');
+      div.className = 'question-item';
+      div.dataset.index = questionCount - 1;
+      div.innerHTML = `
+        <div class="question-header">
+          <span class="question-number">السؤال ${questionCount}</span>
+          <button type="button" class="btn-remove" onclick="removeQuestion(this)" title="حذف السؤال">✕</button>
+        </div>
+        <textarea class="question-text" placeholder="اكتب نص السؤال هنا..." rows="2" required></textarea>
+        <div class="question-type">
+          <label>نوع الإجابة:</label>
+          <select onchange="toggleOptions(this)">
+            <option value="text">إجابة كتابية</option>
+            <option value="mcq">اختيار من متعدد</option>
+            <option value="truefalse">صح/خطأ</option>
+          </select>
+        </div>
+        <div class="options-container" style="display:none;">
+          <label>الخيارات:</label>
+          <div class="options-list">
+            <input type="text" class="option-input" placeholder="الخيار 1">
+            <input type="text" class="option-input" placeholder="الخيار 2">
+          </div>
+          <button type="button" class="btn-small" onclick="addOption(this)">+ إضافة خيار</button>
+        </div>
+        <div class="answer-section">
+          <label>الإجابة النموذجية (اختياري)</label>
+          <input type="text" class="answer-input" placeholder="الإجابة الصحيحة">
+        </div>
+      `;
+      container.appendChild(div);
+      updateNumbers();
+    }
+
+    function removeQuestion(btn) {
+      const item = btn.closest('.question-item');
+      if (document.querySelectorAll('.question-item').length <= 1) {
+        alert('يجب أن يحتوي الامتحان على سؤال واحد على الأقل');
+        return;
+      }
+      item.remove();
+      updateNumbers();
+    }
+
+    function updateNumbers() {
+      const items = document.querySelectorAll('.question-item');
+      items.forEach((item, i) => {
+        item.querySelector('.question-number').textContent = `السؤال ${i + 1}`;
+      });
+      questionCount = items.length;
+    }
+
+    function toggleOptions(select) {
+      const container = select.closest('.question-item').querySelector('.options-container');
+      container.style.display = (select.value === 'mcq') ? 'block' : 'none';
+      if (select.value === 'truefalse') {
+        const list = container.querySelector('.options-list');
+        list.innerHTML = `
+          <input type="text" class="option-input" value="صح" readonly>
+          <input type="text" class="option-input" value="خطأ" readonly>
+        `;
+        container.style.display = 'block';
+      }
+    }
+
+    function addOption(btn) {
+      const list = btn.closest('.options-container').querySelector('.options-list');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'option-input';
+      input.placeholder = `الخيار ${list.children.length + 1}`;
+      list.appendChild(input);
+    }
+
+    document.getElementById('examForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const title = document.getElementById('examTitle').value.trim();
+      if (!title) { alert('الرجاء إدخال عنوان الامتحان'); return; }
+
+      const questions = [];
+      const items = document.querySelectorAll('.question-item');
+      for (const item of items) {
+        const text = item.querySelector('.question-text').value.trim();
+        if (!text) { alert('الرجاء إدخال نص جميع الأسئلة'); return; }
+        const type = item.querySelector('select').value;
+        const options = [];
+        if (type === 'mcq' || type === 'truefalse') {
+          item.querySelectorAll('.option-input').forEach(o => {
+            if (o.value.trim()) options.push(o.value.trim());
+          });
+        }
+        const answer = item.querySelector('.answer-input').value.trim();
+        questions.push({ text, type, options, answer });
+      }
+
+      const btn = this.querySelector('.btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'جاري التوليد...';
+
+      try {
+        const res = await fetch('/api/exams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, questions })
+        });
+        if (!res.ok) throw new Error('فشل إنشاء الامتحان');
+        const data = await res.json();
+        const link = window.location.origin + data.url;
+        document.getElementById('examLink').value = link;
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        alert('حدث خطأ: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 توليد الامتحان';
+      }
+    });
+
+    function copyLink() {
+      const input = document.getElementById('examLink');
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        alert('تم نسخ الرابط!');
+      });
+    }
+  </script>
+</body>
+</html>
