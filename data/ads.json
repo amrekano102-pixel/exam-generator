@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "positions": {
+    "top-page": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "after-nav": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "before-form": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "in-form": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "after-submit": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "bottom-page": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "dashboard-top": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "dashboard-side": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "exam-top": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "exam-between": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "exam-after": { "type": "placeholder", "code": "", "label": "إعلان" },
+    "auth-bottom": { "type": "placeholder", "code": "", "label": "إعلان" }
+  }
+}
