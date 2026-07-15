@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - مولد الامتحانات</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .nav { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 25px; }
+    .nav h2 { font-size: 1.1em; color: #2c3e50; }
+    .nav a { color: #3498db; text-decoration: none; margin-right: 15px; font-size: 0.95em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .logout { color: #e74c3c; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: #fff; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .stat-card .num { font-size: 2em; font-weight: 700; color: #3498db; }
+    .stat-card .label { color: #888; font-size: 0.9em; margin-top: 5px; }
+    .exam-card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .exam-card h3 { margin-bottom: 5px; color: #2c3e50; }
+    .exam-card .meta { color: #888; font-size: 0.85em; margin-bottom: 10px; }
+    .exam-link { display: inline-flex; align-items: center; gap: 8px; background: #f0f7ff; padding: 8px 14px; border-radius: 6px; direction: ltr; text-align: left; font-size: 0.85em; margin-bottom: 12px; cursor: pointer; border: 1px solid #d0e5ff; }
+    .exam-link:hover { background: #e0f0ff; }
+    .submissions-section { margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px; }
+    .submissions-section summary { cursor: pointer; color: #3498db; font-weight: 600; }
+    .sub-item { background: #f8f9fa; border-radius: 8px; padding: 12px; margin-top: 8px; cursor: pointer; transition: background 0.2s; }
+    .sub-item:hover { background: #eef5ff; }
+    .sub-item .student-row { display: flex; justify-content: space-between; align-items: center; }
+    .sub-item .student-name { font-weight: 600; color: #2c3e50; }
+    .sub-item .sub-date { color: #888; font-size: 0.8em; }
+    .empty { text-align: center; padding: 40px; color: #888; }
+    .empty a { color: #3498db; }
+    .btn-create { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+    .btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+    .no-exams { text-align: center; padding: 50px 20px; }
+    .no-exams p { color: #888; margin-bottom: 20px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.8em; font-weight: 700; }
+    .badge-high { background: #d4edda; color: #155724; }
+    .badge-mid { background: #fff3cd; color: #856404; }
+    .badge-low { background: #f8d7da; color: #721c24; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 14px; padding: 25px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+    .modal h2 { margin-bottom: 5px; color: #2c3e50; }
+    .modal .subtitle { color: #888; font-size: 0.9em; margin-bottom: 20px; }
+    .modal-close { float: left; background: none; border: none; font-size: 1.5em; cursor: pointer; color: #999; }
+    .modal-close:hover { color: #333; }
+    .modal .q-item { padding: 12px; border-bottom: 1px solid #eee; }
+    .modal .q-item:last-child { border-bottom: none; }
+    .modal .q-text { font-weight: 600; margin-bottom: 6px; color: #2c3e50; }
+    .modal .q-answer { font-size: 0.95em; }
+    .modal .q-correct { color: #155724; }
+    .modal .q-wrong { color: #721c24; }
+    .modal .q-model { color: #888; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <h2>👋 مرحباً، <%= user.name %></h2>
+      <div>
+        <a href="/">إنشاء امتحان</a>
+        <a href="/dashboard">لوحة التحكم</a>
+        <a href="/settings/ads">الإعلانات</a>
+        <a href="/logout" class="logout">تسجيل الخروج</a>
+      </div>
+    </div>
+
+    <%- include('partials/ad', { position: 'dashboard-top' }) %>
+    <%- include('partials/ad', { position: 'dashboard-side' }) %>
+
+    <% if (exams.length === 0) { %>
+      <div class="no-exams">
+        <h2>📝 لا توجد امتحانات بعد</h2>
+        <p>ابدأ بإنشاء أول امتحان لك الآن</p>
+        <a href="/" class="btn-create">+ إنشاء امتحان جديد</a>
+      </div>
+    <% } else { %>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="num"><%= exams.length %></div>
+          <div class="label">إجمالي الامتحانات</div>
+        </div>
+        <div class="stat-card">
+          <div class="num"><%= submissions.length %></div>
+          <div class="label">إجمالي الإجابات</div>
+        </div>
+        <div class="stat-card">
+          <div class="num"><%=
+            submissions.length > 0
+              ? Math.round(submissions.reduce((s, sub) => s + (sub.percentage || 0), 0) / submissions.length)
+              : 0
+          %>%</div>
+          <div class="label">متوسط النسبة</div>
+        </div>
+      </div>
+
+      <% exams.forEach(function(exam) { %>
+        <% const examSubs = submissions.filter(s => s.examId === exam.id); %>
+        <div class="exam-card">
+          <h3><%= exam.title %></h3>
+          <div class="meta">
+            <%= exam.questions.length %> أسئلة • <%= examSubs.length %> إجابات
+          </div>
+          <div class="exam-link" onclick="copyLink(this)" data-link="<%= baseUrl + '/exam/' + exam.id %>">
+            📋 <%= baseUrl + '/exam/' + exam.id %>
+          </div>
+
+          <% if (examSubs.length > 0) { %>
+            <details class="submissions-section" open>
+              <summary>عرض الإجابات (<%= examSubs.length %>)</summary>
+              <% examSubs.forEach(function(sub) { %>
+                <% const pct = sub.percentage || 0; %>
+                <% const badgeClass = pct >= 70 ? 'badge-high' : (pct >= 40 ? 'badge-mid' : 'badge-low'); %>
+                <div class="sub-item" onclick='showModal(<%= JSON.stringify(sub) %>, <%= JSON.stringify(exam.questions) %>)'>
+                  <div class="student-row">
+                    <span class="student-name">👤 <%= sub.studentName %></span>
+                    <span class="badge <%= badgeClass %>"><%= sub.score %>/<%= sub.total %> — <%= pct %>%</span>
+                  </div>
+                  <div class="sub-date"><%= new Date(sub.submittedAt).toLocaleString('ar-EG') %></div>
+                </div>
+              <% }); %>
+            </details>
+          <% } %>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" id="modalContent">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 id="modalName"></h2>
+      <div class="subtitle" id="modalScore"></div>
+      <div id="modalQuestions"></div>
+    </div>
+  </div>
+
+  <script>
+    function copyLink(el) {
+      const link = el.dataset.link;
+      navigator.clipboard.writeText(link).then(() => {
+        const orig = el.textContent;
+        el.textContent = '✅ تم النسخ!';
+        setTimeout(() => { el.textContent = orig; }, 1500);
+      });
+    }
+
+    function showModal(sub, questions) {
+      document.getElementById('modalName').textContent = '👤 ' + sub.studentName;
+      document.getElementById('modalScore').textContent = sub.score + ' من ' + sub.total + ' — ' + sub.percentage + '%';
+      const container = document.getElementById('modalQuestions');
+      container.innerHTML = '';
+      sub.answers.forEach(function(a) {
+        const q = questions.find(q => q.id === a.questionId);
+        if (!q) return;
+        const div = document.createElement('div');
+        div.className = 'q-item';
+        const icon = a.correct ? '✅' : '❌';
+        const statusClass = a.correct ? 'q-correct' : 'q-wrong';
+        div.innerHTML =
+          '<div class="q-text">' + icon + ' ' + escapeHtml(q.text) + '</div>' +
+          '<div class="q-answer ' + statusClass + '">إجابة الطالب: ' + escapeHtml(a.answer || '(بدون إجابة)') + '</div>' +
+          (q.answer ? '<div class="q-model">الإجابة النموذجية: ' + escapeHtml(q.answer) + '</div>' : '');
+        container.appendChild(div);
+      });
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(e) {
+      if (e && e.target !== document.getElementById('modalOverlay')) return;
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function escapeHtml(text) {
+      const d = document.createElement('div');
+      d.textContent = text;
+      return d.innerHTML;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
