@@ -1,0 +1,120 @@
+[
+  {
+    "id": "50ac6e70",
+    "examId": "1542ad47",
+    "studentName": "Ali",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "A1"
+      },
+      {
+        "questionId": 2,
+        "answer": "b"
+      }
+    ],
+    "submittedAt": "2026-07-12T03:00:12.819Z"
+  },
+  {
+    "id": "f4dbcd35",
+    "examId": "6c9702f1",
+    "studentName": "عادل",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "نهر في الجنه"
+      }
+    ],
+    "submittedAt": "2026-07-12T03:11:28.952Z"
+  },
+  {
+    "id": "e0745523",
+    "examId": "d26c87c3",
+    "studentName": "Ali",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "4",
+        "correct": true
+      }
+    ],
+    "score": 1,
+    "total": 1,
+    "percentage": 100,
+    "submittedAt": "2026-07-14T20:40:45.212Z"
+  },
+  {
+    "id": "5d43497c",
+    "examId": "d26c87c3",
+    "studentName": "Sara",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "3",
+        "correct": false
+      }
+    ],
+    "score": 0,
+    "total": 1,
+    "percentage": 0,
+    "submittedAt": "2026-07-14T20:40:56.479Z"
+  },
+  {
+    "id": "d7ca7880",
+    "examId": "7aacc9bb",
+    "studentName": "Ali",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "4",
+        "correct": true
+      },
+      {
+        "questionId": 2,
+        "answer": "??",
+        "correct": false
+      }
+    ],
+    "score": 1,
+    "total": 2,
+    "percentage": 50,
+    "submittedAt": "2026-07-14T20:42:08.395Z"
+  },
+  {
+    "id": "d7862c70",
+    "examId": "7aacc9bb",
+    "studentName": "Sara",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "3",
+        "correct": false
+      },
+      {
+        "questionId": 2,
+        "answer": "???",
+        "correct": true
+      }
+    ],
+    "score": 1,
+    "total": 2,
+    "percentage": 50,
+    "submittedAt": "2026-07-14T20:42:08.587Z"
+  },
+  {
+    "id": "410010e7",
+    "examId": "dee64759",
+    "studentName": "هغعف",
+    "answers": [
+      {
+        "questionId": 1,
+        "answer": "صح",
+        "correct": false
+      }
+    ],
+    "score": 0,
+    "total": 1,
+    "percentage": 0,
+    "submittedAt": "2026-07-14T20:50:07.943Z"
+  }
+]
