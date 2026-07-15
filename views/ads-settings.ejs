@@ -1,0 +1,118 @@
+<% const POSITIONS = [
+  { key: 'top-page', name: '⬆️ الإعلان العلوي', desc: 'فوق رأس كل الصفحات' },
+  { key: 'after-nav', name: '📌 بعد القائمة', desc: 'بعد شريط التنقل مباشرة' },
+  { key: 'before-form', name: '📝 قبل النموذج', desc: 'قبل نموذج إنشاء الامتحان' },
+  { key: 'in-form', name: '🔲 داخل النموذج', desc: 'داخل نموذج إنشاء الامتحان (بين الأسئلة)' },
+  { key: 'after-submit', name: '✅ بعد الإرسال', desc: 'بعد زر تأكيد الإجابات' },
+  { key: 'bottom-page', name: '⬇️ الإعلان السفلي', desc: 'أسفل كل الصفحات' },
+  { key: 'dashboard-top', name: '📊 أعلى لوحة التحكم', desc: 'فوق لوحة التحكم' },
+  { key: 'dashboard-side', name: '📎 جنب لوحة التحكم', desc: 'جانب قائمة الامتحانات' },
+  { key: 'exam-top', name: '📄 أعلى الامتحان', desc: 'فوق صفحة الامتحان للطلاب' },
+  { key: 'exam-between', name: '🔀 بين الأسئلة', desc: 'بين أسئلة الامتحان (كل 3 أسئلة)' },
+  { key: 'exam-after', name: '🏁 بعد الامتحان', desc: 'بعد انتهاء الطالب من الإجابة' },
+  { key: 'auth-bottom', name: '🔐 أسفل تسجيل الدخول', desc: 'أسفل صفحتي التسجيل والدخول' }
+]; %>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعدادات الإعلانات - مولد الامتحانات</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .nav { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 25px; }
+    .nav h2 { font-size: 1.1em; color: #2c3e50; }
+    .nav a { color: #3498db; text-decoration: none; margin-right: 15px; font-size: 0.95em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .logout { color: #e74c3c; }
+    .info-box { background: #e8f4fd; border: 1px solid #b3d9f2; border-radius: 10px; padding: 18px; margin-bottom: 25px; }
+    .info-box h3 { color: #2c3e50; margin-bottom: 8px; }
+    .info-box ol { margin-right: 20px; color: #555; line-height: 2; }
+    .info-box a { color: #3498db; }
+    .saved-msg { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: 600; }
+    .ad-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-right: 4px solid #3498db; }
+    .ad-section h3 { margin-bottom: 4px; color: #2c3e50; font-size: 1.05em; }
+    .ad-section .pos-desc { color: #888; font-size: 0.85em; margin-bottom: 12px; }
+    .toggle-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .toggle-row input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+    .toggle-row label { font-weight: 700; cursor: pointer; font-size: 1.1em; }
+    .type-select { margin-bottom: 10px; }
+    .type-select label { display: block; margin-bottom: 4px; font-size: 0.9em; color: #555; }
+    .type-select select { width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95em; }
+    .code-input label { display: block; margin-bottom: 4px; font-size: 0.9em; color: #555; }
+    .code-input textarea { width: 100%; min-height: 80px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace; font-size: 0.85em; resize: vertical; direction: ltr; text-align: left; }
+    .code-input .hint { color: #888; font-size: 0.8em; margin-top: 3px; }
+    .stats-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .stats-bar span { background: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <h2>👋 <%= user.name %></h2>
+      <div>
+        <a href="/">إنشاء امتحان</a>
+        <a href="/dashboard">لوحة التحكم</a>
+        <a href="/settings/ads">الإعلانات</a>
+        <a href="/logout" class="logout">تسجيل الخروج</a>
+      </div>
+    </div>
+
+    <header>
+      <h1>📢 إعدادات الإعلانات</h1>
+      <p>تحكم في جميع الإعلانات في الموقع — 12 موقع إعلاني</p>
+    </header>
+
+    <% if (saved) { %>
+      <div class="saved-msg">✅ تم حفظ جميع الإعدادات بنجاح!</div>
+    <% } %>
+
+    <div class="info-box">
+      <h3>💰 كيف تربح من الإعلانات؟</h3>
+      <ol>
+        <li>سجل في <a href="https://adsense.google.com" target="_blank">Google AdSense</a> (أو أي شبكة إعلانات)</li>
+        <li>استلم كود الإعلان من الموقع (شيفرة HTML)</li>
+        <li>اختار نوع "Google AdSense" لكل موقع والصق الكود</li>
+        <li>أو استخدم "مخصص" لأي كود HTML تاني</li>
+      </ol>
+    </div>
+
+    <form method="POST" action="/settings/ads">
+      <div class="toggle-row">
+        <input type="checkbox" id="enabled" name="enabled" <%= locals.ads && locals.ads.enabled ? 'checked' : '' %>>
+        <label for="enabled">تفعيل عرض الإعلانات في كل المواقع</label>
+      </div>
+
+      <% POSITIONS.forEach(function(pos) { %>
+        <% const ad = locals.ads && locals.ads.positions && locals.ads.positions[pos.key]; %>
+        <div class="ad-section">
+          <h3><%= pos.name %></h3>
+          <div class="pos-desc"><%= pos.desc %></div>
+
+          <div class="type-select">
+            <label>نوع الإعلان</label>
+            <select name="<%= pos.key %>Type">
+              <option value="placeholder" <%= ad && ad.type === 'placeholder' ? 'selected' : '' %>>نص placeholder</option>
+              <option value="adsense" <%= ad && ad.type === 'adsense' ? 'selected' : '' %>>Google AdSense</option>
+              <option value="custom" <%= ad && ad.type === 'custom' ? 'selected' : '' %>>كود مخصص</option>
+            </select>
+          </div>
+
+          <div class="form-section" style="margin-bottom:10px;">
+            <label style="font-size:0.9em;color:#555;">نص التسمية</label>
+            <input type="text" name="<%= pos.key %>Label" value="<%= ad ? (ad.label || 'إعلان') : 'إعلان' %>" style="padding:8px;">
+          </div>
+
+          <div class="code-input">
+            <label>كود الإعلان (HTML)</label>
+            <textarea name="<%= pos.key %>Code" placeholder="الصق كود AdSense أو أي كود هنا..."><%= ad ? (ad.code || '') : '' %></textarea>
+            <div class="hint">انسخ الكود من AdSense والصقه هنا — أو اتركه فارغاً لو اخترت "placeholder"</div>
+          </div>
+        </div>
+      <% }); %>
+
+      <button type="submit" class="btn-submit">💾 حفظ جميع الإعدادات (<%= POSITIONS.length %> موقع)</button>
+    </form>
+  </div>
+</body>
+</html>
