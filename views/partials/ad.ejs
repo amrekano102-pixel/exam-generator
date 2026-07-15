@@ -1,0 +1,22 @@
+<%
+  const ads = locals.ads;
+  if (!ads || !ads.enabled) return;
+  const ad = ads.positions && ads.positions[position];
+  if (!ad) return;
+  const type = ad.type || 'placeholder';
+%>
+<% if (type === 'placeholder') { %>
+  <div class="ad ad-<%= position %>">
+    <div class="ad-label"><%= ad.label || 'إعلان' %></div>
+    <p>مساحة إعلانية - يمكنك وضع إعلانك هنا</p>
+  </div>
+<% } else if (type === 'adsense' && ad.code) { %>
+  <div class="ad ad-<%= position %>">
+    <div class="ad-label"><%= ad.label || 'إعلان' %></div>
+    <%- ad.code %>
+  </div>
+<% } else if (type === 'custom' && ad.code) { %>
+  <div class="ad ad-<%= position %>">
+    <%- ad.code %>
+  </div>
+<% } %>
