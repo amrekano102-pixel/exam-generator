@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - مولد الامتحانات</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .auth-form { max-width: 420px; margin: 40px auto; }
+    .auth-form h1 { text-align: center; margin-bottom: 8px; }
+    .auth-form p { text-align: center; color: #888; margin-bottom: 25px; }
+    .auth-form .btn-submit { margin-top: 5px; }
+    .auth-footer { text-align: center; margin-top: 15px; color: #888; }
+    .auth-footer a { color: #3498db; text-decoration: none; }
+    .error-msg { background: #fde8e8; color: #e74c3c; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+  </style>
+</head>
+<body>
+  <%- include('partials/ad', { position: 'top-page' }) %>
+
+  <div class="container">
+    <div class="auth-form">
+      <h1>📝 تسجيل الدخول</h1>
+      <p>ادخل إلى حسابك لإدارة الامتحانات</p>
+
+      <% if (error) { %>
+        <div class="error-msg"><%= error %></div>
+      <% } %>
+
+      <form method="POST" action="/login">
+        <div class="form-section">
+          <label>البريد الإلكتروني</label>
+          <input type="email" name="email" placeholder="example@email.com" required>
+        </div>
+        <div class="form-section">
+          <label>كلمة المرور</label>
+          <input type="password" name="password" placeholder="******" required>
+        </div>
+        <button type="submit" class="btn-submit">تسجيل الدخول</button>
+      </form>
+
+      <div class="auth-footer">
+        ليس لديك حساب؟ <a href="/register">إنشاء حساب جديد</a>
+      </div>
+    </div>
+    <%- include('partials/ad', { position: 'auth-bottom' }) %>
+  </div>
+</body>
+</html>
